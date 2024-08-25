@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import List
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -6,8 +6,7 @@ from openai import OpenAI
 import json
 import os
 
-from create_dataset.data_item import DataItem
-from pipeline.entity_extraction import Entities
+from pipeline.pipeline_steps.entity_extraction import Entities
 
 load_dotenv()
 
