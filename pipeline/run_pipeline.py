@@ -14,7 +14,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
 
-results = {}
+all_outputs = []
 for data_item in data_items[1:2]:
     data_item = DataItem(**data_item)
     extracted_entities = extract_entities(data_item)  # evaluate against step_list
@@ -28,7 +28,7 @@ for data_item in data_items[1:2]:
     )  # evaluate against answer
     intermediate_outputs = [step[1] for step in output['intermediate_steps']]
 
-    results = {
+    outputs = {
         "id": data_item.id,
         "extracted_entities": extracted_entities.__dict__,
         "logic_name": commands.logic_name,
@@ -36,6 +36,7 @@ for data_item in data_items[1:2]:
         "final_output": output["output"],
         "intermediate_steps": intermediate_outputs,
     }
+    all_outputs.append(outputs)
 
 with open(f'{dir_path}/../outputs/outputs.json', 'w') as f:
-    json.dump(results, f)
+    json.dump(all_outputs, f)

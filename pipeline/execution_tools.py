@@ -42,7 +42,7 @@ def divide(arg1: float, arg2 : float):
 def convert_to_percentage(arg1: float) -> str:
     """This tool can be used to convert a numerical value to the string representation as percentage."""
     try:
-       pct = np.round(arg1*100, 2)
+       pct = np.round(arg1*100, 4)
        return f"{pct}%"
     except Exception as e:
         return f"Error: {e}"

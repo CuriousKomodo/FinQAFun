@@ -1,34 +1,63 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 import json
 import os
 import numpy as np
+import re
+
+import pandas as pd
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def _evaluate_entity_extraction(extracted_entities, step_list):
-    return
+def _evaluate_entity_extraction(extracted_values: List[str], step_list: List[str]):
+    value_retrieval_steps = [step for step in step_list if step.startswith("Ask for")]
+    expected_values = [_retrieve_float_from_string(step) for step in value_retrieval_steps]
+    return set(extracted_values) == set(expected_values)
 
 def _evaluate_commands(commands, step_list):
-    return
+    operation_steps = [step for step in step_list if not step.startswith("Ask for")]
+    return operation_steps == commands
+
+def _find_n_decimal_of_float_string(float_string):
+    float_string = float_string.strip('%')
+    decimals_string = float_string.split('.')[1]
+    return len(decimals_string)
+
+def _retrieve_float_from_string(string) -> Optional[float]:
+    float_retrieved = re.findall("\d+\.\d+", string)
+    if float_retrieved:
+        return float_retrieved[0]
+    else:
+        return None
 
 def evaluate(output: Dict, data_item: Dict) -> Dict:
     answer_float = float(data_item["answer"].strip('%'))
-    output_float = float(output["final_output"].strip('%'))
-    is_float_match = np.isclose(answer_float, output_float, rtol=1e-03, equal_nan=False)
+    n_decimal = _find_n_decimal_of_float_string(data_item["answer"])
+    output_float = np.round(float(output["final_output"].strip('%')), n_decimal)
+
+    is_float_match = np.isclose(answer_float, output_float, rtol=1e-05, equal_nan=False)
 
     step_list = data_item["step_list"]
-    are_entities_correct = _evaluate_entity_extraction(output["extracted_entities"], step_list)
+    are_entity_values_correct = _evaluate_entity_extraction(
+        extracted_values=output["extracted_entities"].get("values"),
+        step_list=step_list
+    )
     are_commands_correct = _evaluate_commands(output["commands"], step_list)
-    return {}
+    return {
+        "is_float_match": is_float_match,
+        "are_entity_values_correct": are_entity_values_correct,
+        "are_commands_correct": are_commands_correct
+    }
 
-
-def evaluate_all(outputs: List[Dict], data_items: List[Dict]) -> Dict:
-    all_metrics = {}
+def evaluate_all(outputs: List[Dict], data_items: List[Dict]) -> pd.DataFrame:
+    all_metrics = []
     for data_item, output in zip(data_items, outputs):
         metrics = evaluate(output, data_item)
+        metrics.update(output)
         metrics.update(data_item)
         all_metrics.append(metrics)
-    return all_metrics
+
+    metrics_table = pd.DataFrame.from_records(all_metrics)
+    return metrics_table
 
 
 if __name__ == '__main__':
@@ -36,4 +65,5 @@ if __name__ == '__main__':
     data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
     outputs = json.load(open(os.path.join(dir_path, '../outputs/outputs.json')))
 
-    evaluate_all(outputs, data_items)
+    metrics_table = evaluate_all(outputs, data_items[1:2])
+    metrics_table.to_csv(os.path.join(dir_path, '../outputs/metrics_table.csv'))
