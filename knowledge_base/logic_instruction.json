@@ -1,0 +1,28 @@
+[
+    {
+      "name": "Percentage change from X to Y",
+      "key_words": ["growth", "percentage increase", "percentage difference"],
+      "operation_commands": {"A0": "subtract(Y, X)", "A1":  "divide(A0, X)"}
+    },
+    {
+      "name": "Proportion of X in Y",
+      "key_words": ["proportion", "ratio", "portion"],
+      "operation_commands": {"A0":"divide(Y, X)"}
+    },
+    {
+      "name": "Sum of X and Y and other variables",
+      "key_words": ["sum", "total", "portion"],
+      "operation_commands": {"A0": "add(X, Y, *kwargs)"}
+    },
+  {
+    "name": "Average of X and Y and other variables",
+    "key_words": [
+      "mean",
+      "average"
+    ],
+    "operation_commands": {
+      "A0": "add(X, Y, *kwargs)",
+      "A1": "divide(A0, constant)"
+    }
+  }
+]
