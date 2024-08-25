@@ -17,6 +17,7 @@ client = OpenAI()
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class Commands(BaseModel):
+    logic_name: str
     operation_commands_with_filled_variables: List[str]
 
 

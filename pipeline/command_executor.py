@@ -33,7 +33,7 @@ def execute_commands(commands: Commands, question: str):
 
     agent = create_tool_calling_agent(llm, tools, prompt)
 
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, intermediate_steps=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
     output = agent_executor.invoke({
         "commands": str(commands.__dict__),
         "question": question,
