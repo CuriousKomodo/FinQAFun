@@ -1,3 +1,5 @@
+from typing import Dict
+
 from dotenv import load_dotenv
 import json
 import os
@@ -9,14 +11,7 @@ from pipeline.entity_extraction import extract_entities
 
 load_dotenv()
 
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
-data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
-
-all_outputs = []
-for data_item in data_items[1:2]:
-    data_item = DataItem(**data_item)
+def execute(data_item: DataItem) -> Dict:
     extracted_entities = extract_entities(data_item)  # evaluate against step_list
     commands = generate_commands(
         extracted_entities=extracted_entities,
@@ -36,7 +31,18 @@ for data_item in data_items[1:2]:
         "final_output": output["output"],
         "intermediate_steps": intermediate_outputs,
     }
-    all_outputs.append(outputs)
+    return outputs
 
-with open(f'{dir_path}/../outputs/outputs.json', 'w') as f:
-    json.dump(all_outputs, f)
+
+if __name__ == '__main__':
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
+
+    all_outputs = []
+    for data_item in data_items[1:2]:
+        data_item = DataItem(**data_item)
+        outputs = execute(data_item)
+        all_outputs.append(outputs)
+
+    with open(f'{dir_path}/../outputs/outputs.json', 'w') as f:
+        json.dump(all_outputs, f)
