@@ -15,7 +15,7 @@ num_type_2 = len(df)-num_type_1
 type_1_df = df[df["qa_0"].isna()]
 
 data_items = []
-for idx, row in type_1_df[:20].iterrows():
+for idx, row in type_1_df[:100].iterrows():
     item = DataItem(
         id=row["id"],
         pre_text=row["pre_text"],
