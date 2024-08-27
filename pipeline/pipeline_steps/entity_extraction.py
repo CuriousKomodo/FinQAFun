@@ -40,10 +40,17 @@ def extract_entities(data_item: DataItem) -> Entities:
     system_prompt = f"""
         "You are a helpful assistant who specialises in understanding tables of financial data. 
         "You work with an accountant to calculate some important statistics about these tables.
-        You task is to generate a questions requesting for the entities needed for this calculation. 
-        If you can find them in the table please record the values, otherwise leave the value as <NULL>.\n
+        You task is to extract all the key entities needed for this calculation. 
+        If you can find them in the table, post-text or pre-text, please record the values, 
+        otherwise leave the value as <NULL>.\n
         Here's an example of your task: \n\n table information: {example_information} \n 
-        Entities required: {expected_entities_from_example}
+        Entities required: {expected_entities_from_example} \n 
+        
+        Some context related to calculation: \n 
+        - Cumulative return calculation typically requires extracting the earliest value recorded, 
+        which is usually at 100%. Unless the return is calculated from a specific point in time. 
+        - Calculation of a sum or an average based on a time period requires extraction of all the values recorded 
+        from beginning till the end of the period. 
     """
     user_prompt = (
         "You are given with the following information: "
@@ -62,7 +69,3 @@ def extract_entities(data_item: DataItem) -> Entities:
     )
     entities = completion.choices[0].message.parsed
     return entities
-
-
-# How to evaluate this?
-# Compare Answers list - If the extracted Entities values overlap with values from answers list (excluding the variables), it's seen as successful.

@@ -113,7 +113,7 @@ def entity_extraction_success_rate_by_n_steps(results_table: pd.DataFrame):
 if __name__ == '__main__':
     # Have a measure for the difficulty of the challenge. I.e. via # of variables
     data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
-    outputs = json.load(open(os.path.join(dir_path, '../outputs/outputs_20.json')))
+    outputs = json.load(open(os.path.join(dir_path, '../outputs/outputs.json')))
 
     results_table = evaluate_all(outputs, data_items)
     results_table.fillna(False, inplace=True)

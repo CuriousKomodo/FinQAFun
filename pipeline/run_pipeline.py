@@ -44,7 +44,7 @@ if __name__ == '__main__':
     data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
 
     all_outputs = []
-    for data_item in tqdm(data_items[:5]):
+    for data_item in tqdm(data_items[:20]):
         try:
             data_item = DataItem(**data_item)
             outputs = execute_inference(data_item)
