@@ -10,10 +10,9 @@ from create_dataset.data_item import DataItem
 
 load_dotenv()
 
+dir_path = os.getenv("DATA_DIR")
+data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
-data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
 
 class Entities(BaseModel):
     names: List[str]
@@ -42,7 +41,7 @@ def extract_entities(data_item: DataItem) -> Entities:
         "You are a helpful assistant who specialises in understanding tables of financial data. 
         "You work with an accountant to calculate some important statistics about these tables.
         You task is to generate a questions requesting for the entities needed for this calculation. 
-        If you can find them in the table please record the values.\n
+        If you can find them in the table please record the values, otherwise leave the value as <NULL>.\n
         Here's an example of your task: \n\n table information: {example_information} \n 
         Entities required: {expected_entities_from_example}
     """

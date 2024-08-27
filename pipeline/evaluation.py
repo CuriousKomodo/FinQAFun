@@ -19,8 +19,11 @@ def _evaluate_commands(commands, step_list):
 
 def _find_n_decimal_of_float_string(float_string):
     float_string = float_string.strip('%')
-    decimals_string = float_string.split('.')[1]
-    return len(decimals_string)
+    decimals_string = float_string.split('.')
+    if decimals_string and len(decimals_string) == 2:
+        return len(decimals_string[1])
+    else:
+        return 0
 
 def _retrieve_float_from_string(string) -> Optional[float]:
     float_retrieved = re.findall("\d+\.\d+", string)
@@ -30,23 +33,29 @@ def _retrieve_float_from_string(string) -> Optional[float]:
         return None
 
 def evaluate(output: Dict, data_item: Dict) -> Dict:
-    answer_float = float(data_item["answer"].strip('%'))
-    n_decimal = _find_n_decimal_of_float_string(data_item["answer"])
-    output_float = np.round(float(output["final_output"].strip('%')), n_decimal)
+    try:
+        answer_float = float(data_item["answer"].strip('%'))
+        n_decimal = _find_n_decimal_of_float_string(data_item["answer"])
 
-    is_float_match = np.isclose(answer_float, output_float, rtol=1e-05, equal_nan=False)
+        output_float = np.round(float(output["final_output"].strip('%')), n_decimal)
 
-    step_list = data_item["step_list"]
-    are_entity_values_correct = _evaluate_entity_extraction(
-        extracted_values=output["extracted_entities"].get("values"),
-        step_list=step_list
-    )
-    are_commands_correct = _evaluate_commands(output["commands"], step_list)
-    return {
-        "is_float_match": is_float_match,
-        "are_entity_values_correct": are_entity_values_correct,
-        "are_commands_correct": are_commands_correct
-    }
+        is_float_match = np.isclose(answer_float, output_float, rtol=1e-05, equal_nan=False)
+        step_list = data_item["step_list"]
+        are_entity_values_correct = _evaluate_entity_extraction(
+            extracted_values=output["extracted_entities"].get("values"),
+            step_list=step_list
+        )
+        are_commands_correct = _evaluate_commands(output["commands"], step_list)
+        return {
+            "is_float_match": is_float_match,
+            "are_entity_values_correct": are_entity_values_correct,
+            "are_commands_correct": are_commands_correct
+        }
+    except Exception as e:
+        print(f"Cannot evaluate {data_item['id']} due to error: {e} \n")
+        print(f"output: \n {output}")
+        return {}
+
 
 def evaluate_all(outputs: List[Dict], data_items: List[Dict]) -> pd.DataFrame:
     all_metrics = []
@@ -65,5 +74,6 @@ if __name__ == '__main__':
     data_items = json.load(open(os.path.join(dir_path, '../data/train_data_items.json')))
     outputs = json.load(open(os.path.join(dir_path, '../outputs/outputs.json')))
 
-    metrics_table = evaluate_all(outputs, data_items[1:2])
+    metrics_table = evaluate_all(outputs, data_items)
+    metrics_table.fillna(False, inplace=True)
     metrics_table.to_csv(os.path.join(dir_path, '../outputs/metrics_table.csv'))
