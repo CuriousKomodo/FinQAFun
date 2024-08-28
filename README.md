@@ -15,6 +15,10 @@ This MVP focuses on the type i problems for simplicity.
 
 ## Results
 
+![img.png](img.png)
+
+![img_1.png](img_1.png)
+
 
 ## Discussion
 

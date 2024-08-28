@@ -19,7 +19,8 @@ def execute_commands(commands: Commands, question: str):
                 Note that we use 'A0' to denote the output from the first operation, and 'A1' to denote the output from the second operation.
                 The same pattern applies for outputs from all further operations. 
                 If the question is asking for percentage, convert the final output to percentage.             
-                Return only the final output, such as  "5%" or "71.2"
+                Return only the final output, such as  "5%" or "71.2". 
+                If the question is asking for percentage decrease/decline and the final output is negative, revert the sign of the final output. 
                 """
 
             ),

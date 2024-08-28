@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import Union, List
 
 from dotenv import load_dotenv
 from pydantic import BaseModel

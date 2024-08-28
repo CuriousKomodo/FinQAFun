@@ -10,14 +10,44 @@ import pandas as pd
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+
+def _retrieve_numerical_from_string(string) -> Optional[float]:
+    float_retrieved = re.findall(r'[\d\.\d]+', string)
+    if float_retrieved:
+        return float_retrieved[0]
+    else:
+        return None
+
 def _evaluate_entity_extraction(extracted_values: List[str], step_list: List[str]):
     value_retrieval_steps = [step for step in step_list if step.startswith("Ask for")]
-    expected_values = [_retrieve_float_from_string(step) for step in value_retrieval_steps]
+    expected_values = [_retrieve_numerical_from_string(step) for step in value_retrieval_steps]
     return set(expected_values).issubset(set(extracted_values))
 
 def _evaluate_commands(commands, step_list):
+    def cleanup_arguments(args):
+        cleaned_args = []
+        for arg in args:
+            if str(arg).startswith("A"):
+                cleaned_args.append(arg)
+            else:
+                numerical_arg = _retrieve_numerical_from_string(str(arg))
+                cleaned_args.append(numerical_arg)
+        return cleaned_args
+    def extract_inputs_from_step(step:str):
+        tool = None
+        for method in ['subtract', 'add', 'divide', 'multiply']:
+            if method in step:
+                tool = method
+
+        args = re.search(r'\((.+)\)', step).group(0)
+        args = list(args.replace('(','').replace(')', '').split(","))
+        args = cleanup_arguments(args)
+        return tool, args
+
     operation_steps = [step for step in step_list if not step.startswith("Ask for")]
-    return operation_steps == commands
+    expected_tool_calls = [extract_inputs_from_step(step) for step in operation_steps]
+    actual_commands = [extract_inputs_from_step(command) for command in commands]
+    return expected_tool_calls == actual_commands
 
 def evaluate_tools_executed(tools_executed, step_list):
     def extract_inputs_from_step(step:str):
@@ -48,13 +78,6 @@ def _find_n_decimal_of_float_string(float_string):
         return len(decimals_string[1])
     else:
         return 0
-
-def _retrieve_float_from_string(string) -> Optional[float]:
-    float_retrieved = re.findall(r'[\d\.\d]+', string)
-    if float_retrieved:
-        return float_retrieved[0]
-    else:
-        return None
 
 def evaluate(output: Dict, data_item: Dict) -> Dict:
     try:
@@ -100,13 +123,17 @@ def plot_metrics(results_table: pd.DataFrame):
     labels = ["entity extraction", "commands generation", "final output"]
     values = [entity_extraction_success_rate, commands_generation_success_rate, final_output_success_rate]
     plt.bar(x=labels, height=values)
-    plt.title("Success rate")
+    plt.title("Success rate of the pipeline")
+    plt.ylabel("success rate")
     plt.show()
 
-def entity_extraction_success_rate_by_n_steps(results_table: pd.DataFrame):
-    entity_extraction_success_counts = results_table[["num_steps", "are_entity_values_correct"]].groupby("num_steps").sum("are_entity_values_correct")
-    entity_extraction_success_rates = entity_extraction_success_counts/results_table.groupby("num_steps").count()
-    entity_extraction_success_rates.plot.bar(stacked=True)
+def pipeline_success_rate_by_n_steps(results_table: pd.DataFrame):
+    metrics = results_table[["num_steps", "are_entity_values_correct", "are_commands_correct", "is_float_match"]]
+    success_counts = metrics.groupby("num_steps").sum()
+    success_rates = success_counts/metrics.groupby("num_steps").count()
+    success_rates.plot.bar(stacked=False)
+    plt.title("Success rate of the pipeline by number of steps")
+    plt.ylabel("success rate")
     plt.show()
 
 
@@ -121,4 +148,4 @@ if __name__ == '__main__':
     results_table.to_csv(os.path.join(dir_path, '../outputs/metrics_table.csv'))
 
     plot_metrics(results_table)
-    entity_extraction_success_rate_by_n_steps(results_table)
+    pipeline_success_rate_by_n_steps(results_table)
