@@ -7,8 +7,8 @@ import os
 from tqdm import tqdm
 
 from create_dataset.data_item import DataItem
-from pipeline.pipeline_steps.command_executor import execute_commands
-from pipeline.pipeline_steps.command_generator import generate_commands
+from pipeline.pipeline_steps.command_execution import execute_commands
+from pipeline.pipeline_steps.command_generation import generate_commands
 from pipeline.pipeline_steps.entity_extraction import extract_entities
 
 load_dotenv()

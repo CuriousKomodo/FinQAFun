@@ -2,7 +2,7 @@ from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
-from pipeline.pipeline_steps.command_generator import Commands
+from pipeline.pipeline_steps.command_generation import Commands
 from pipeline.pipeline_steps.execution_tools import add, subtract, multiply, divide, convert_to_percentage
 
 
