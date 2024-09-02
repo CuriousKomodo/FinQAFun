@@ -23,7 +23,7 @@ def process_table_into_docs(data_item: Dict[str, Any], with_table_parsing: bool)
         documents.append(data_item["table"])
 
     documents.extend(data_item["post_text"])
-    documents = [TextNode(text=doc,) for doc in documents]
+    documents = [TextNode(text=doc, metadata={"doc_id": data_item["id"]}) for doc in documents]
     return documents
 
 
