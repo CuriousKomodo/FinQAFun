@@ -80,6 +80,7 @@ Any additional entities extracted will not be penalised.
 
 For example, for the question: "what is the percent change in net revenue between 2007 and 2008?", 
 and extraction step returns the following:
+
 ![img.png](readme_images/extracted_entity_example.png)
 
 This is regarded as a successful extraction, even though the net revenue for 2006 is not relevant. 
