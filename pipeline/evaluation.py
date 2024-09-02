@@ -49,7 +49,7 @@ def _evaluate_commands(commands, step_list):
     actual_commands = [extract_inputs_from_step(command) for command in commands]
     return expected_tool_calls == actual_commands
 
-def evaluate_tools_executed(tools_executed, step_list):
+def _evaluate_tools_executed(tools_executed, step_list):
     def extract_inputs_from_step(step:str):
         expected_method = None
         for method in ['subtract', 'add', 'divide', 'multiply']:
