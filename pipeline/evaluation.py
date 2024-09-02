@@ -137,7 +137,7 @@ def autopct_format(values):
 def distribution_of_logic_names(results_table: pd.DataFrame):
     distribution = results_table["logic_name"].value_counts()
     plt.pie(distribution, labels=distribution.index, autopct=autopct_format(distribution))
-    plt.title('Distribution of logic name predicted')
+    plt.title('Distribution of workflows predicted')
     plt.show()
     return
 
@@ -165,8 +165,8 @@ def are_method_name_correct_by_logic_name(results_table: pd.DataFrame):
     success_counts = metrics.groupby("logic_name").sum()
     success_rates = success_counts/metrics.groupby("logic_name").count()
     success_rates.plot.barh(stacked=False)
-    plt.title("Are invoked method names correct")
-    plt.xlabel("proportion of correct method names")
+    plt.title("Selected metrics by workflow")
+    plt.xlabel("success rate")
     plt.subplots_adjust(left=0.4)
     plt.show()
 

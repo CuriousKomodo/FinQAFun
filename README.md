@@ -113,10 +113,9 @@ The outputs from the examples are reviewed in a google sheet [here](https://docs
 ### % Success rate by pipeline steps
 I ran the pipeline based on the first 100 training examples. 
 
-![img.png](img.png)
+![img.png](readme_images/success_rates.png)
 
 The %success of entity extraction, command generation and final output matching are 71%, 52% and 45% respectively.
-(insert misclassification breakdown?)
 
 
 ### % Success rate by the number of steps involved in calculation
@@ -148,19 +147,20 @@ The success rate generally decreases as the number of steps increases.
 The command generator classifies the most relevant workflow given the question.
 69% of the questions relates to calculating percentage change. 
 
-![img_2.png](img_2.png)
+![img.png](readme_images/workflow_distribution.png)
 
 The pipeline appears to perform the best on percentage change calculation. 
 Meanwhile it performs the worst on proportion type questions. Perhaps the workflow context needs to be tweaked. 
-![img_1.png](img_1.png)
+![img.png](readme_images/metrics_by_workflows.png)
 
 
 ## Improvements
-If I have longer on this project, I would: 
+If I have longer on this project, I would review all 100 examples for a more thorough analysis
+
+But according to my observations so far, following are the significant improvements to try: 
 - Redesign the entity extraction step with RAG as an agent tool* for accurate value extraction (work in progress)
 - Produce more context about the workflows (or add new workflows) in the knowledge base 
 - Resolve the known limitations of my evaluation scripts for more accurate metrics
-- Explore some approaches to prevent PII leak as some financial reports can contain confidential information. I can experiment with Llama 3 or patch PII data with a simple language model. 
 - Fine tune model with `step_list` to generate better commands
 
 ### Brainstorming for type 2 questions
