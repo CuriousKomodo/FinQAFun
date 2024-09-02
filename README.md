@@ -35,24 +35,20 @@ This step extracts the relevant entities & their values from the table & text fo
 
 I used the `gpt-4o-2024-08-06` as it reliably produces structured outputs according to the schema. 
 
-### Step 2. Command generation
+### Step 2. Command generation (+ workflow classification)
 Given the extracted entities & the question, this step formulates a list of commands in order to calculate the target metric.
 
-In addition, the GPT is provided context on different type of calculation workflows, in order to choose the most relevant one according to the question. 
+In addition, the GPT is provided context on different type of calculation workflows, in order to choose the most relevant one to the question. 
 This context is configured in `knowledge_base/logic_instruction.json`. 
 
-There are 4 workflows: 
+There are 4 workflows to be classified: 
 
 - Percentage change from X to Y
 - Proportion of X in Y
 - Sum of X and Y and other variables
 - Average of X and Y and other variables
 
-Below is an example of one of the calculation workflows in the JSON: 
-
-![img.png](readme_images/workflow_instruction.png)
-
-The aim is to produce commands that resembles the format from the `step_list` field in the training data. 
+Next, this step produces commands that resembles the structure of the `step_list` field in the training data. 
 The following is an example of a list of generated commands: 
 
 `    "commands": [
@@ -78,12 +74,8 @@ The final output is the string representation of float, integer or percentage.
 The extraction is considered successful if the extracted entities contains all the variables used for the calculation. 
 Any additional entities extracted will not be penalised.  
 
-For example, for the question: "what is the percent change in net revenue between 2007 and 2008?", 
-and extraction step returns the following:
-
-![img.png](readme_images/extracted_entity_example.png)
-
-This is regarded as a successful extraction, even though the net revenue for 2006 is not relevant. 
+For example, question: "what is the percent change in net revenue between 2007 and 2008?", 
+if the extraction also returns net revenue for 2006, it is still regarded as a successful extraction
 
 ### Command generation accuracy
 The generated commands are evaluated against the step_list. 
