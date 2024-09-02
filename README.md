@@ -26,7 +26,7 @@ I propose to use a 3-steps pipeline, and they are broken down into extraction, c
 
 ![img.png](readme_images/pipeline.png)
 
-The main benefits of this pipeline: 
+The main benefits of this pipeline (as an MVP): 
 - enables us to develop and QA each step independently
 - more visibility on the model performance 
 
@@ -148,13 +148,14 @@ Meanwhile it performs the worst on proportion type questions. Perhaps the workfl
 
 
 ## Improvements
-If I have longer on this project, I would review all 100 examples for a more thorough analysis
+If I have longer on this project, I would review all 100 examples for a more thorough analysis. 
 
 But according to my observations so far, following are the significant improvements to try: 
 - Redesign the entity extraction step with RAG as an agent tool* for accurate value extraction (work in progress)
 - Produce more context about the workflows (or add new workflows) in the knowledge base 
 - Resolve the known limitations of my evaluation scripts for more accurate metrics
 - Fine tune model with `step_list` to generate better commands
+
 
 ### Brainstorming for type 2 questions
 
