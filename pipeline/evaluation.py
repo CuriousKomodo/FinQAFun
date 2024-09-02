@@ -117,10 +117,11 @@ def plot_metrics(results_table: pd.DataFrame):
     invoked_method_names_success_rate = sum(results_table["are_invoked_method_names_correct"]) / len(results_table)
     final_output_success_rate = sum(results_table["is_float_match"]) / len(results_table)
     labels = ["entity extraction", "invoked method names", "commands generation", "final output"]
-    values = [entity_extraction_success_rate, commands_generation_success_rate, invoked_method_names_success_rate,  final_output_success_rate]
-    plt.barh(y=labels, width=values)
+    values = [entity_extraction_success_rate, invoked_method_names_success_rate, commands_generation_success_rate,  final_output_success_rate]
+    plt.barh(y=labels[::-1], width=values[::-1], align='center',)
     plt.title("Success rate of the pipeline")
     plt.xlabel("success rate")
+    plt.subplots_adjust(left=0.3)
 
     plt.show()
 
@@ -163,9 +164,10 @@ def are_method_name_correct_by_logic_name(results_table: pd.DataFrame):
     ]]
     success_counts = metrics.groupby("logic_name").sum()
     success_rates = success_counts/metrics.groupby("logic_name").count()
-    success_rates.plot.bar(stacked=False)
+    success_rates.plot.barh(stacked=False)
     plt.title("Are invoked method names correct")
-    plt.ylabel("proportion of correct method names")
+    plt.xlabel("proportion of correct method names")
+    plt.subplots_adjust(left=0.4)
     plt.show()
 
 
@@ -177,9 +179,9 @@ if __name__ == '__main__':
     results_table = evaluate_all(outputs, data_items)
     results_table.fillna(False, inplace=True)
     results_table["num_steps"] = results_table["step_list"].apply(lambda x: len(x))
-    results_table.to_csv(os.path.join(dir_path, '../outputs/metrics_table.csv'))
+    results_table.to_csv(os.path.join(dir_path, '../outputs/review_outputs_table.csv'))
 
-    # plot_metrics(results_table)
-    # pipeline_success_rate_by_n_steps(results_table)
+    plot_metrics(results_table)
+    pipeline_success_rate_by_n_steps(results_table)
     distribution_of_logic_names(results_table)
     are_method_name_correct_by_logic_name(results_table)

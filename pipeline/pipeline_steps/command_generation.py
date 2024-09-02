@@ -13,7 +13,7 @@ load_dotenv()
 client = OpenAI()
 
 knowledge_base_dir =os.getenv("KNOWLEDGE_BASE_DIR")
-logic_instructions = json.load(open(os.path.join(knowledge_base_dir, 'logic_instruction.json')))
+logic_instructions = json.load(open(os.path.join(knowledge_base_dir, 'calculation_workflows.json')))
 
 class Commands(BaseModel):
     """Output model for structured commands generation"""

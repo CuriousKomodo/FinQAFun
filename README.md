@@ -5,11 +5,13 @@ We are building an QA pipeline that can perform simple calculation, in order to 
 
 
 ## Instruction on running the project
+- `pip install -r requirments.txt` - to install dependencies
 - `create_dataset/create_data_items.py `- to process the training data into JSONs with a specific format and save them as `data/train_data_items.json`
 - `pipeline/run_pipeline.py` - to execute the 3-steps pipeline to generate answers in batch and save the output as `outputs/outputs.json`
 - `pipeline/run_inference_on_one_example.py` - to demo the pipeline on one example
 - `pipeline/evaluation.py` - to evaluate the outputs against the expected outputs/answers from training data
 
+Note that all the `pipeline/rag` is work in progress. 
 
 ## Dataset understanding
 There are 3037 examples in the training dataset. 2109 are type 1 problems while the rest are type 2 (according to the definition in the paper)
@@ -36,12 +38,19 @@ I used the `gpt-4o-2024-08-06` as it reliably produces structured outputs accord
 ### Step 2. Command generation
 Given the extracted entities & the question, this step formulates a list of commands in order to calculate the target metric.
 
-In addition, the GPT is provided context on different type of calculation logics, in order to choose the most relevant one according to the question. 
+In addition, the GPT is provided context on different type of calculation workflows, in order to choose the most relevant one according to the question. 
 This context is configured in `knowledge_base/logic_instruction.json`. 
 
-Below is an example of one of the calculation logics: 
+There are 4 workflows: 
 
-![img.png](readme_images/logic_instruction.png)
+- Percentage change from X to Y
+- Proportion of X in Y
+- Sum of X and Y and other variables
+- Average of X and Y and other variables
+
+Below is an example of one of the calculation workflows in the JSON: 
+
+![img.png](readme_images/workflow_instruction.png)
 
 The aim is to produce commands that resembles the format from the `step_list` field in the training data. 
 The following is an example of a list of generated commands: 
@@ -102,7 +111,7 @@ This step checks if the numerical value from the final output matches with the a
 ### % Success rate by pipeline steps
 I ran the pipeline based on the first 100 training examples. 
 
-![img_2.png](outputs/success_rate.png)
+![img.png](img.png)
 
 The %success of entity extraction, command generation and final output matching are 71%, 52% and 45% respectively.
 (insert misclassification breakdown?)
@@ -119,7 +128,7 @@ The success rate generally decreases as the number of steps increases.
 
 **Invoked correct method names**:
 - The correct method names are invoked at around 70% of the time regardless of question complexity.
-- The ~30% mismatch is likely to be due to some missing/incorrect context about calculation logics in the knowledge base.
+- The ~30% mismatch is likely to be due to some missing/incorrect context about calculation workflows in the knowledge base.
 
 **Command generation**:
 - The success rate appears to be around 50% regardless of question complexity or extraction accuracy. 
@@ -131,17 +140,32 @@ The success rate generally decreases as the number of steps increases.
 - The success rate generally decreases with increasing complexity. 
 - Assuming that command generation %success stays roughly the same, this observation is consistent with my opinion above that improving entity extraction is the most impactful way to lift the overall performance. 
 
+### Other observations
+
+**Model performance by classified calculation workflow**
+The command generator classifies the most relevant workflow given the question.
+69% of the questions relates to calculating percentage change. 
+
+![img_2.png](img_2.png)
+
+The pipeline appears to perform the best on percentage change calculation. 
+Meanwhile it performs the worst on proportion type questions. Perhaps the workflow context needs to be tweaked. 
+![img_1.png](img_1.png)
+
 
 ## Improvements
 If I have longer on this project, I would: 
 - Redesign the entity extraction step with RAG as an agent tool* for accurate value extraction (work in progress)
-- Produce more context about the financial calculations in the knowledge base to improve commands generation
+- Produce more context about the workflows (or add new workflows) in the knowledge base 
 - Resolve the known limitations of my evaluation scripts for more accurate metrics
-- Some approaches to prevent PII leak (because some financial reports can contain confidential information). I can experiment with offline models such as Llama 3 or replace PII data with a simple language model. 
+- Explore some approaches to prevent PII leak as some financial reports can contain confidential information. I can experiment with Llama 3 or patch PII data with a simple language model. 
+- Fine tune model with `step_list` to generate better commands
 
-*Brainstorming for type 2 questions*
-- Run pipeline on question 1 using table 1.
-- Store all the intermediate inputs from the previous steps, i.e. which entities to extract/RAG queries, commands generated + executed
-- Ask GPT to extract the same entities from table 2 (if RAG is used, use the same queries but switch to the table 2 vector index)
-- To generate commands for table 2, instruct GPT to replace the table 1 values with new values for table 2 
-- Execute the new commands for table 2 and obtain final output for table 2.
+### Brainstorming for type 2 questions
+
+Assuming that question 1 and question 2 requires the same workflow,  an MVP approach might be: 
+1. Run the whole pipeline on question 1 using table 1. 
+2. Store all the intermediate inputs from the previous steps, i.e. which entities to extract/RAG queries, commands generated + executed 
+3. Extract the same entities from table 2 (if RAG is used, use the same queries but switch to the table 2 vector index)
+4. To generate commands for table 2, ask GPT to simply replace the table 1 values with new values for table 2 
+5. Execute the new commands for table 2 and obtain final output for table 2.
