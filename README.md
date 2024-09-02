@@ -108,6 +108,8 @@ This step checks if the numerical value from the final output matches with the a
 - if the values are correct with reversed signs, it's treated as a mismatch
 
 ## Results & Discussion
+The outputs from the examples are reviewed in a google sheet [here](https://docs.google.com/spreadsheets/d/1odnWDEpRj30JrZSX1y_S3eY1yYbfoUy1rgORR_uQorc/edit?usp=sharing)
+
 ### % Success rate by pipeline steps
 I ran the pipeline based on the first 100 training examples. 
 
