@@ -16,10 +16,12 @@ knowledge_base_dir =os.getenv("KNOWLEDGE_BASE_DIR")
 logic_instructions = json.load(open(os.path.join(knowledge_base_dir, 'logic_instruction.json')))
 
 class Commands(BaseModel):
+    """Output model for structured commands generation"""
     logic_name: str
     operation_commands_with_filled_variables: List[str]
 
 def generate_commands(question: str, extracted_entities: Entities) -> Commands:
+    """Generate the commands required for calculation based on question and extracted entities"""
     system_prompt = f"""You are an accountant who is calculating some financial metrics using a computer program. 
     
         Given any question, you need to: \n
@@ -34,6 +36,7 @@ def generate_commands(question: str, extracted_entities: Entities) -> Commands:
          Note that we use 'A0' to denote the output from the first operation, and 'A1' to denote the output from the second operation.
          The same pattern applies for outputs from all further operations. 
          Note that there is no need to replace these variables in the operation commands. \n
+         If you do not identify the logic name, return <NULL>.
          """
     user_prompt = f"""
         Question: {question} \n

@@ -15,6 +15,7 @@ load_dotenv()
 
 
 def execute_inference(data_item: DataItem) -> Dict:
+    """This function runs the 3-steps pipeline to produce an answer to the question in the given data item."""
     extracted_entities = extract_entities(data_item)
     commands = generate_commands(
         extracted_entities=extracted_entities,

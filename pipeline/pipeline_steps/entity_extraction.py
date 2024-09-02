@@ -15,10 +15,12 @@ data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
 
 
 class Entities(BaseModel):
+    """Output model for structured entity extraction with LLM"""
     names: List[str]
     values: List[Union[float, str]]
 
 
+"""Here is a working example to be provided in the prompt for LLM"""
 example = data_items[0]
 example_information = (f"Table pre-text: {example['pre_text']} "
                 f"\n Table: {example['table']} "
@@ -31,6 +33,7 @@ expected_entities_from_example = {
 }
 
 def extract_entities(data_item: DataItem) -> Entities:
+    """Calls LLM to extract the relevant entities from the table + context given the question"""
     information = f"""
                     Table pre-text: {data_item.pre_text}\n
                     Table: {data_item.table}\n

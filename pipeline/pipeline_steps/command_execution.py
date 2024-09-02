@@ -9,7 +9,7 @@ from pipeline.pipeline_steps.execution_tools import add, subtract, multiply, div
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
 def execute_commands(commands: Commands, question: str):
-
+    """Executes the commands in order to produce the final output to the answer"""
     prompt = ChatPromptTemplate.from_messages(
         [
             (

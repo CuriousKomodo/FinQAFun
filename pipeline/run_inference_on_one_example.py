@@ -7,6 +7,7 @@ from pipeline.run_pipeline import execute_inference
 
 
 if __name__ == '__main__':
+    """This function shows a demo of the pipeline on one example"""
     dir_path = os.getenv("DATA_DIR")
     data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
 
@@ -17,6 +18,7 @@ if __name__ == '__main__':
 
     metrics = evaluate(output=output, data_item=data_item)
 
+    print(f"Question: {data_item['question']} \n")
     print(f"Final answer: {output['final_output']} \n")
     print(f"Metrics: {metrics} \n")
 
