@@ -7,7 +7,7 @@ from llama_index.core.schema import TextNode
 
 load_dotenv()
 
-def process_table_into_docs(data_item: Dict[str, Any], with_table_parsing: bool) -> List[TextNode]:
+def process_table_into_nodes(data_item: Dict[str, Any], with_table_parsing: bool) -> List[TextNode]:
     documents = []
     documents.extend(data_item["pre_text"])
 
@@ -23,12 +23,12 @@ def process_table_into_docs(data_item: Dict[str, Any], with_table_parsing: bool)
         documents.append(data_item["table"])
 
     documents.extend(data_item["post_text"])
-    documents = [TextNode(text=doc, metadata={"doc_id": data_item["id"]}) for doc in documents]
-    return documents
+    nodes = [TextNode(text=doc, metadata={"doc_id": data_item["id"]}) for doc in documents]
+    return nodes
 
 
 if __name__ == '__main__':
     dir_path = os.getenv("DATA_DIR")
     data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
-    documents = process_table_into_docs(data_items[0], with_table_parsing=True)
+    documents = process_table_into_nodes(data_items[0], with_table_parsing=True)
     print(len(documents))

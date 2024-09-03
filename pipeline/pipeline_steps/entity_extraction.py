@@ -1,10 +1,10 @@
 from typing import Union, List
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from openai import OpenAI
 import json
 import os
+from langchain_core.pydantic_v1 import BaseModel, Field
 
 from create_dataset.data_item import DataItem
 
@@ -16,8 +16,8 @@ data_items = json.load(open(os.path.join(dir_path, 'train_data_items.json')))
 
 class Entities(BaseModel):
     """Output model for structured entity extraction with LLM"""
-    names: List[str]
-    values: List[Union[float, str]]
+    names: List[str] = Field(description="the names of entities")
+    values: List[Union[float, str]] = Field(description="the values of the entities")
 
 
 """Here is a working example to be provided in the prompt for LLM"""
