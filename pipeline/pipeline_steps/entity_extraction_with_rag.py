@@ -11,6 +11,7 @@ from langchain_openai import ChatOpenAI
 
 from create_dataset.data_item import DataItem
 from pipeline.pipeline_steps.entity_extraction import Entities
+from pipeline.rag.rag import SimpleRAG
 
 load_dotenv()
 
@@ -39,12 +40,12 @@ def parse(output):
             tool=name, tool_input=inputs, log="", message_log=[output]
         )
 
-def extract_entities_with_rag(question: str, document_id: str, rag) -> Entities:
+def extract_entities_with_rag(question: str, rag: SimpleRAG) -> Entities:
     """Calls LLM to extract the relevant entities from the table + context given the question"""
     @tool
     def run_rag(query):
         """Run RAG to extract the relevant entities given query"""
-        return rag.run_query(query=query)
+        return rag.run_query(query)
 
     llm_with_tools = llm.bind_functions([run_rag, Entities])
 
@@ -55,7 +56,7 @@ def extract_entities_with_rag(question: str, document_id: str, rag) -> Entities:
         
         Instruction:
         - Identify a list of all the entities that are relevant for answering the question.
-        - run rag to find the values of each of these entities, by asking yourself question in the format of "What is the value of ENTITY_NAME?"
+        - run rag to find the values of each of these entities, by querying in the format of "What is the value of ENTITY_NAME?" \n
         
         If you cannot retrieve the values, fill them as <NULL>.\n
 
@@ -72,9 +73,6 @@ def extract_entities_with_rag(question: str, document_id: str, rag) -> Entities:
             MessagesPlaceholder("agent_scratchpad"),
         ]
     )
-    tools = [run_rag]
-
-    agent = create_tool_calling_agent(llm, tools, prompt)
 
     agent = (
             {
@@ -101,6 +99,6 @@ def extract_entities_with_rag(question: str, document_id: str, rag) -> Entities:
 
 if __name__ == "__main__":
     output = extract_entities_with_rag(
-        question="what was the percent of the growth in the revenues from 2007 to 2008"
+        question="what was the Net Cash from Operating Activities 2008?"
     )
     print(output)
